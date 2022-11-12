@@ -307,7 +307,7 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalSpoke):
         self._reverse = None
         self.logger = logging.getLogger("anaconda")
 
-        self.qubes_data = self._initial_setup_module.All
+        self.qubes_data = self._initial_setup_module
 
         self.templatesBox = self.builder.get_object("templatesBox")
         self.mainBox = self.builder.get_object("mainBox")

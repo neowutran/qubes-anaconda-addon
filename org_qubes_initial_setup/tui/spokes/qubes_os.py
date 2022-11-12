@@ -85,7 +85,7 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalTUISpoke):
         self.title = N_("Qubes OS")
         self._initial_setup_module = INITIAL_SETUP.get_proxy()
         self._container = None
-        self.qubes_data = self._initial_setup_module.All
+        self.qubes_data = self._initial_setup_module
 
         for attr in self.qubes_data.bool_options:
             setattr(self, '_' + attr, getattr(self.qubes_data, attr))
