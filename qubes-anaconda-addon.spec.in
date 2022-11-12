@@ -26,7 +26,8 @@ at first boot time.
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons
-cp -a org_qubes_os_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+cp -a org_qubes_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+cp -a data $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
 
 %files
 %defattr(-,root,root,-)
