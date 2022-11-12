@@ -1,22 +1,23 @@
 #
-# The Qubes OS Project, https://www.qubes-os.org/
+# Copyright (C) 2020 Red Hat, Inc.
 #
-# Copyright (C) 2019 Marek Marczykowski-Górecki
-#                           <marmarek@invisiblethingslab.com>
+# This copyrighted material is made available to anyone wishing to use,
+# modify, copy, or redistribute it subject to the terms and conditions of
+# the GNU General Public License v.2, or (at your option) any later version.
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY expressed or implied, including the implied warranties of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.  You should have received a copy of the
+# GNU General Public License along with this program; if not, write to the
+# Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.  Any Red Hat trademarks that are incorporated in the
+# source code or documentation are not subject to the GNU General Public
+# License and may only be used or replicated with the express permission of
+# Red Hat, Inc.
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public
-# License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU General Public
-# License along with this library; if not, see <https://www.gnu.org/licenses/>.
-#
+
+"""This module defines the parts needed for handling Kickstart data in the service."""
+
 import grp
 import os
 import glob
@@ -31,9 +32,12 @@ from pyanaconda.core.configuration.anaconda import conf
 from pyanaconda.core.kickstart import KickstartSpecification
 from pyanaconda.core.kickstart.addon import AddonData
 from pykickstart.errors import KickstartValueError
-log = logging.getLogger(__name__)
 
-__all__ = ['QubesKickstartSpecification']
+# from pykickstart.options import KSOptionParser
+# from pyanaconda.core.kickstart import VERSION, KickstartSpecification
+# from pyanaconda.core.kickstart.addon import AddonData
+
+log = logging.getLogger(__name__)
 
 TEMPLATES_RPM_PATH = '/var/lib/qubes/template-packages/'
 
@@ -112,7 +116,7 @@ def started_from_usb():
     return False
 
 
-class QubesKickstartData(AddonData):
+class InitialSetupData(AddonData):
     """
     Class providing and storing data for the Qubes initial setup addon
     """
@@ -511,9 +515,9 @@ class QubesKickstartData(AddonData):
         self.run_command(['/usr/bin/qvm-start', default_netvm])
 
 
-class QubesKickstartSpecification(KickstartSpecification):
-    """The kickstart specification of the Kdump service."""
+class InitialSetupKickstartSpecification(KickstartSpecification):
+    """The kickstart specification of the qubes data."""
 
     addons = {
-        "org_qubes_os_initial_setup": QubesKickstartData
+        "org_qubes_initial_setup": InitialSetupData
     }

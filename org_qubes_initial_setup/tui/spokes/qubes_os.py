@@ -17,75 +17,80 @@
 #
 # Red Hat Author(s): Vratislav Podzimek <vpodzime@redhat.com>
 #
+#
+# NOTE: Anaconda is using Simpleline library for Text User Interface.
+#       To learn how to use Simpleline look on the documentation:
+#
+#       http://python-simpleline.readthedocs.io/en/latest/
+#
 
-"""Module with the class for the Qubes OS TUI spoke."""
+
+"""Module with the class for the Hello world TUI spoke."""
+
+import logging
+import re
+
+from simpleline.render.prompt import Prompt
+from simpleline.render.screen import InputState
+from simpleline.render.containers import ListColumnContainer
+from simpleline.render.widgets import CheckboxWidget, EntryWidget
+
+from pyanaconda.core.constants import PASSWORD_POLICY_ROOT
+from pyanaconda.ui.tui.spokes import NormalTUISpoke
+from pyanaconda.ui.common import FirstbootSpokeMixIn
+# Simpleline's dialog configured for use in Anaconda
+from pyanaconda.ui.tui.tuiobject import Dialog, PasswordDialog
+
+# the path to addons is in sys.path so we can import things from org_fedora_hello_world
+from org_qubes_initial_setup.categories.hello_world import InitialSetupCategory
+from org_qubes_initial_setup.constants import INITIAL_SETUP
+
+log = logging.getLogger(__name__)
+
+# export only the HelloWorldSpoke and HelloWorldEditSpoke classes
+__all__ = ["QubesOsSpoke"]
 
 # import gettext
-# _ = lambda x: gettext.ldgettext("qubes-os-anaconda-plugin", x)
+# _ = lambda x: gettext.ldgettext("hello-world-anaconda-plugin", x)
 
 # will never be translated
 _ = lambda x: x
 N_ = lambda x: x
 
-from pyanaconda.ui.categories.system import SystemCategory
-from pyanaconda.ui.tui.spokes import NormalTUISpoke
-from simpleline.render.containers import ListColumnContainer
-from simpleline.render.widgets import CheckboxWidget
-from simpleline.render.screen import InputState
-from pyanaconda.ui.common import FirstbootOnlySpokeMixIn
 
-# export only the HelloWorldSpoke and HelloWorldEditSpoke classes
-__all__ = ["QubesOsSpoke"]
-
-class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
+class QubesOsSpoke(FirstbootSpokeMixIn, NormalTUISpoke):
     """
-    Since this class inherits from the FirstbootOnlySpokeMixIn, it will
-    only appear in the Initial Setup (successor of the Firstboot tool).
+    Class for the Hello world TUI spoke that is a subclass of NormalTUISpoke. It
+    is a simple example of the basic unit for Anaconda's text user interface.
+    Since it is also inherited form the FirstbootSpokeMixIn, it will also appear
+    in the Initial Setup (successor of the Firstboot tool).
 
     :see: pyanaconda.ui.tui.TUISpoke
     :see: pyanaconda.ui.common.FirstbootSpokeMixIn
-    :see: pyanaconda.ui.tui.tuiobject.TUIObject
-    :see: pyaanconda.ui.tui.simpleline.Widget
-
+    :see: simpleline.render.widgets.Widget
     """
 
     ### class attributes defined by API ###
 
-
     # category this spoke belongs to
-    category = SystemCategory
+    category = InitialSetupCategory
 
-    def __init__(self, data, storage, payload):
+    def __init__(self, *args, **kwargs):
         """
-        :see: pyanaconda.ui.tui.base.UIScreen
-        :see: pyanaconda.ui.tui.base.App
-        :param data: data object passed to every spoke to load/store data
-                     from/to it
-        :type data: pykickstart.base.BaseHandler
-        :param storage: object storing storage-related information
-                        (disks, partitioning, bootloader, etc.)
-        :type storage: blivet.Blivet
-        :param payload: object storing packaging-related information
-        :type payload: pyanaconda.packaging.Payload
+        Create the representation of the spoke.
 
+        :see: simpleline.render.screen.UIScreen
         """
-
-        NormalTUISpoke.__init__(self, data, storage, payload)
-
-        self.initialize_start()
-
-        # title of the spoke
+        super().__init__(*args, **kwargs)
         self.title = N_("Qubes OS")
-
+        self._initial_setup_module = INITIAL_SETUP.get_proxy()
         self._container = None
-
-        self.qubes_data = data.addons.org_qubes_os_initial_setup
+        self.qubes_data = self._initial_setup_module.All
 
         for attr in self.qubes_data.bool_options:
             setattr(self, '_' + attr, getattr(self.qubes_data, attr))
 
         self.initialize_done()
-
 
     def initialize(self):
         """
@@ -94,10 +99,22 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
         a long time and thus could be called in a separated thread.
 
         :see: pyanaconda.ui.common.UIObject.initialize
-
         """
+        super().initialize()
 
-        NormalTUISpoke.initialize(self)
+    def setup(self, args=None):
+        """
+        The setup method that is called right before the spoke is entered.
+        It should update its state according to the contents of DBus modules.
+
+        :see: simpleline.render.screen.UIScreen.setup
+        """
+        super().setup(args)
+
+        self._reverse = self._hello_world_module.Reverse
+        self._lines = self._hello_world_module.Lines
+
+        return True
 
     def _add_checkbox(self, name, title):
         w = CheckboxWidget(title=title, completed=getattr(self, name))
@@ -106,21 +123,20 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
     def refresh(self, args=None):
         """
         The refresh method that is called every time the spoke is displayed.
-        It should update the UI elements according to the contents of
-        self.data.
+        It should generate the UI elements according to its state.
 
         :see: pyanaconda.ui.common.UIObject.refresh
-        :see: pyanaconda.ui.tui.base.UIScreen.refresh
+        :see: simpleline.render.screen.UIScreen.refresh
         :param args: optional argument that may be used when the screen is
-                     scheduled (passed to App.switch_screen* methods)
+                     scheduled
         :type args: anything
-        :return: whether this screen requests input or not
-        :rtype: bool
-
         """
-        super(QubesOsSpoke, self).refresh()
-        self._container = ListColumnContainer(1)
+        # call parent method to setup basic container with screen title set
+        super().refresh(args)
 
+        self._container = ListColumnContainer(
+            columns=1
+        )
         w = CheckboxWidget(title=_('Create default system qubes '
                                    '(sys-net, sys-firewall, default DispVM)'),
                            completed=self._system_vms)
@@ -188,12 +204,10 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
 
     def execute(self):
         """
-        The excecute method that is called when the spoke is left. It is
-        supposed to do all changes to the runtime environment according to
-        the values set in the spoke.
-
+        The execute method is not called automatically for TUI. It should be called
+        in input() if required. It is supposed to do all changes to the runtime
+        environment according to the values set in the spoke.
         """
-
         # nothing to do here
         pass
 
@@ -202,12 +216,10 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
         """
         The completed property that tells whether all mandatory items on the
         spoke are set, or not. The spoke will be marked on the hub as completed
-        or uncompleted acording to the returned value.
+        or uncompleted according to the returned value.
 
         :rtype: bool
-
         """
-
         return self.qubes_data.seen
 
     @property
@@ -219,9 +231,7 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
         below the spoke's title.
 
         :rtype: str
-
         """
-
         return ""
 
     def input(self, args, key):
@@ -229,17 +239,15 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
         The input method that is called by the main loop on user's input.
 
         :param args: optional argument that may be used when the screen is
-                     scheduled (passed to App.switch_screen* methods)
+                     scheduled
         :type args: anything
         :param key: user's input
         :type key: unicode
         :return: if the input should not be handled here, return it, otherwise
-                 return INPUT_PROCESSED or INPUT_DISCARDED if the input was
-                 processed succesfully or not respectively
-        :rtype: bool|unicode
-
+                 return InputState.PROCESSED or InputState.DISCARDED if the input was
+                 processed successfully or not respectively
+        :rtype: enum InputState
         """
-
         if self._container.process_user_input(key):
             self.apply()
             return InputState.PROCESSED_AND_REDRAW

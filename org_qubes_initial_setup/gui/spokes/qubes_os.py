@@ -1,7 +1,4 @@
 #
-# Copyright (C) 2020  Frédéric Pierret <frederic.pierret@qubes-os.org>
-# Copyright (C) 2016  M. Vefa Bicakci <m.v.b@runbox.com>
-# Copyright (C) 2016  Qubes OS Developers
 # Copyright (C) 2013  Red Hat, Inc.
 #
 # This copyrighted material is made available to anyone wishing to use,
@@ -21,29 +18,32 @@
 # Red Hat Author(s): Vratislav Podzimek <vpodzime@redhat.com>
 #
 
-"""Module with the QubesOsSpoke class."""
-
-# will never be translated
-_ = lambda x: x
-N_ = lambda x: x
+"""Module with the HelloWorldSpoke class."""
 
 import os
 import subprocess
 import logging
-import gi
-
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-gi.require_version('GLib', '2.0')
 
 from gi.repository import Gtk
-from pyanaconda.ui.categories.system import SystemCategory
+# from pyanaconda.ui.gui import GUIObject
 from pyanaconda.ui.gui.spokes import NormalSpoke
-from pyanaconda.ui.common import FirstbootOnlySpokeMixIn
+from pyanaconda.ui.common import FirstbootSpokeMixIn
+
+# the path to addons is in sys.path so we can import things from org_fedora_hello_world
+from org_qubes_initial_setup.categories.initial_setup import InitialSetupCategory
+from org_qubes_initial_setup.constants import INITIAL_SETUP
+
+log = logging.getLogger(__name__)
 
 # export only the spoke, no helper functions, classes or constants
 __all__ = ["QubesOsSpoke"]
 choices_instances = []
+# import gettext
+# _ = lambda x: gettext.ldgettext("hello-world-anaconda-plugin", x)
+
+# will never be translated
+_ = lambda x: x
+N_ = lambda x: x
 
 
 class QubesChoiceBase:
@@ -257,17 +257,19 @@ class QubesChoicePool(QubesChoiceBase):
         self.tpcombobox.set_active(tpool_index)
 
 
-class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
+class QubesOsSpoke(FirstbootSpokeMixIn, NormalSpoke):
     """
-    Since this class inherits from the FirstbootOnlySpokeMixIn, it will
-    only appear in the Initial Setup (successor of the Firstboot tool).
+    Class for the Hello world spoke. This spoke will be in the Hello world
+    category and thus on the Summary hub. It is a very simple example of a unit
+    for the Anaconda's graphical user interface. Since it is also inherited form
+    the FirstbootSpokeMixIn, it will also appear in the Initial Setup (successor
+    of the Firstboot tool).
 
     :see: pyanaconda.ui.common.UIObject
     :see: pyanaconda.ui.common.Spoke
     :see: pyanaconda.ui.gui.GUIObject
     :see: pyanaconda.ui.common.FirstbootSpokeMixIn
     :see: pyanaconda.ui.gui.spokes.NormalSpoke
-
     """
 
     ### class attributes defined by API ###
@@ -283,7 +285,7 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
     uiFile = "qubes_os.glade"
 
     # category this spoke belongs to
-    category = SystemCategory
+    category = InitialSetupCategory
 
     # spoke icon (will be displayed on the hub)
     # preferred are the -symbolic icons as these are used in Anaconda's spokes
@@ -293,25 +295,19 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
     title = N_("_QUBES OS")
 
     ### methods defined by API ###
-    def __init__(self, data, storage, payload):
+    def __init__(self, *args, **kwargs):
         """
+        Create the representation of the spoke.
+
         :see: pyanaconda.ui.common.Spoke.__init__
-        :param data: data object passed to every spoke to load/store data
-                     from/to it
-        :type data: pykickstart.base.BaseHandler
-        :param storage: object storing storage-related information
-                        (disks, partitioning, bootloader, etc.)
-        :type storage: blivet.Blivet
-        :param payload: object storing packaging-related information
-        :type payload: pyanaconda.packaging.Payload
-
         """
-
-        NormalSpoke.__init__(self, data, storage, payload)
-
+        super().__init__(*args, **kwargs)
+        self._initial_setup_module = INITIAL_SETUP.get_proxy()
+        self._entry = None
+        self._reverse = None
         self.logger = logging.getLogger("anaconda")
 
-        self.qubes_data = self.data.addons.org_qubes_os_initial_setup
+        self.qubes_data = self._initial_setup_module.All
 
         self.templatesBox = self.builder.get_object("templatesBox")
         self.mainBox = self.builder.get_object("mainBox")
@@ -510,10 +506,10 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         a long time and thus could be called in a separated thread.
 
         :see: pyanaconda.ui.common.UIObject.initialize
-
         """
-
-        NormalSpoke.initialize(self)
+        super().initialize()
+        # self._entry = self.builder.get_object("textLines")
+        # self._reverse = self.builder.get_object("reverseCheckButton")
         self.qubes_data.gui_mode = True
 
     def refresh(self):
@@ -523,9 +519,12 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         self.data.
 
         :see: pyanaconda.ui.common.UIObject.refresh
-
         """
+        # lines = self._hello_world_module.Lines
+        # self._entry.get_buffer().set_text("".join(lines))
 
+        # reverse = self._hello_world_module.Reverse
+        # self._reverse.set_active(reverse)
         self.choice_install_fedora.set_selected(
             self.qubes_data.fedora_available and
             'fedora' in self.qubes_data.templates_to_install
@@ -569,10 +568,19 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
     def apply(self):
         """
         The apply method that is called when the spoke is left. It should
-        update the contents of self.data with values set in the GUI elements.
-
+        update the D-Bus service with values set in the GUI elements.
         """
+        #buf = self._entry.get_buffer()
+        #text = buf.get_text(
+        #    buf.get_start_iter(),
+        #    buf.get_end_iter(),
+        #    True
+        #)
+        #lines = text.splitlines(True)
+        #self._hello_world_module.SetLines(lines)
 
+        #reverse = self._reverse.get_active()
+        #self._hello_world_module.SetReverse(reverse)
         self.qubes_data.skip = self.check_advanced.get_selected()
 
         self.qubes_data.templates_to_install = []
@@ -612,6 +620,15 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
 
         self.qubes_data.seen = True
 
+    def execute(self):
+        """
+        The execute method that is called when the spoke is left. It is
+        supposed to do all changes to the runtime environment according to
+        the values set in the GUI elements.
+        """
+        # nothing to do here
+        pass
+
     @property
     def ready(self):
         """
@@ -619,9 +636,8 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         or not. The spoke is made (in)sensitive based on the returned value.
 
         :rtype: bool
-
         """
-
+        # this spoke is always ready
         return True
 
     @property
@@ -632,9 +648,7 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         or uncompleted acording to the returned value.
 
         :rtype: bool
-
         """
-
         return self.qubes_data.seen
 
     @property
@@ -644,8 +658,8 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         completed to continue in the installation process.
 
         :rtype: bool
-
         """
+        # this is an optional spoke that is not mandatory to be completed
         return True
 
     @property
@@ -657,20 +671,15 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         below the spoke's title.
 
         :rtype: str
-
         """
+        lines = self._hello_world_module.Lines
 
-        return ""
-
-    def execute(self):
-        """
-        The execute method that is called when the spoke is left. It is
-        supposed to do all changes to the runtime environment according to
-        the values set in the GUI elements.
-
-        """
-
-        pass
+        if not lines:
+            return _("No text added")
+        elif self._hello_world_module.Reverse:
+            return _("Text set with {} lines to reverse").format(len(lines))
+        else:
+            return _("Text set with {} lines").format(len(lines))
 
     @staticmethod
     def _parse_lvm_cache(lvm_output):
