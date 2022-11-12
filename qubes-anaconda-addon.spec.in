@@ -32,8 +32,10 @@ cp -a data $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README
-%dir %{_datadir}/anaconda/addons/org_qubes_os_initial_setup
-%{_datadir}/anaconda/addons/org_qubes_os_initial_setup/*
+%dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
+%{_datadir}/anaconda/addons/org_qubes_initial_setup/*
+%dir %{_datadir}/anaconda/addons/data
+%{_datadir}/anaconda/addons/data/*
 
 %changelog
 * Sun Mar 27 2016 M. Vefa Bicakci <m.v.b@runbox.com> - 1.0-1
