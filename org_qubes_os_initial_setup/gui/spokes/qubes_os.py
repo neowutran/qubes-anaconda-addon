@@ -31,6 +31,7 @@ import os
 import subprocess
 import logging
 import gi
+import json
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -310,6 +311,13 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalSpoke):
         NormalSpoke.__init__(self, data, storage, payload)
 
         self.logger = logging.getLogger("anaconda")
+
+        ## Debug
+        debug = json.dumps(data)
+        self.logger.debug(debug)
+        debug = json.dumps(self.data)
+        self.logger.debug(debug)
+
         self.qubes_data = self.data.addons.org_qubes_os_initial_setup
 
         self.templatesBox = self.builder.get_object("templatesBox")

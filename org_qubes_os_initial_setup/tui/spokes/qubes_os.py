@@ -79,7 +79,7 @@ class QubesOsSpoke(FirstbootOnlySpokeMixIn, NormalTUISpoke):
 
         self._container = None
 
-        self.qubes_data = self.data.addons.org_qubes_os_initial_setup
+        self.qubes_data = data.addons.org_qubes_os_initial_setup
 
         for attr in self.qubes_data.bool_options:
             setattr(self, '_' + attr, getattr(self.qubes_data, attr))

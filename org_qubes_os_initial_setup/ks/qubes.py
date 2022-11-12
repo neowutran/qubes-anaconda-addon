@@ -24,16 +24,16 @@ import distutils.version
 import pyudev
 import subprocess
 import shutil
+import logging
 
 from pyanaconda.core import util
 from pyanaconda.core.configuration.anaconda import conf
-from pyanaconda.addons import AddonData
+from pyanaconda.core.kickstart import KickstartSpecification
+from pyanaconda.core.kickstart.addon import AddonData
 from pykickstart.errors import KickstartValueError
-from pyanaconda.anaconda_loggers import get_module_logger
-from pyanaconda.progress import progress_message
-log = get_module_logger(__name__)
+log = logging.getLogger(__name__)
 
-__all__ = ['QubesData']
+__all__ = ['QubesKickstartSpecification']
 
 TEMPLATES_RPM_PATH = '/var/lib/qubes/template-packages/'
 
@@ -80,7 +80,7 @@ def usb_keyboard_present():
             if kbd.get('ID_PATH', '').startswith('pci-0000:' + dom0_usb + '-'):
                 break
         else:
-             return True
+            return True
     return False
 
 
@@ -112,25 +112,25 @@ def started_from_usb():
     return False
 
 
-class QubesData(AddonData):
+class QubesKickstartData(AddonData):
     """
     Class providing and storing data for the Qubes initial setup addon
     """
 
     bool_options = (
-        'system_vms', 'disp_firewallvm_and_usbvm', 'disp_netvm','default_vms',
+        'system_vms', 'disp_firewallvm_and_usbvm', 'disp_netvm', 'default_vms',
         'whonix_vms', 'whonix_default', 'usbvm', 'usbvm_with_netvm', 'skip',
         'allow_usb_mouse',
     )
 
-    def __init__(self, name):
+    def __init__(self):
         """
 
         :param name: name of the addon
         :type name: str
         """
 
-        super(QubesData, self).__init__(name)
+        super().__init__()
         self.fedora_available = is_template_rpm_available('fedora')
         self.debian_available = is_template_rpm_available('debian')
 
@@ -241,10 +241,10 @@ class QubesData(AddonData):
         
         return None
 
-    def handle_header(self, lineno, args):
+    def handle_header(self, args, line_number=None):
         pass
 
-    def handle_line(self, line):
+    def handle_line(self, line, line_number=None):
         """
 
         :param line:
@@ -510,3 +510,10 @@ class QubesData(AddonData):
         self.run_command(['/usr/bin/qubes-prefs', 'clockvm', 'sys-net'])
         self.run_command(['/usr/bin/qvm-start', default_netvm])
 
+
+class QubesKickstartSpecification(KickstartSpecification):
+    """The kickstart specification of the Kdump service."""
+
+    addons = {
+        "org_qubes_os_initial_setup": QubesKickstartData
+    }
