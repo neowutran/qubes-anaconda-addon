@@ -27,15 +27,18 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons
 cp -a org_qubes_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
-cp -a data $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+cp data/org.qubes.Anaconda.Addons.InitialSetup.conf $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
+cp data/org.qubes.Anaconda.Addons.InitialSetup.service $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
 
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README
 %dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
 %{_datadir}/anaconda/addons/org_qubes_initial_setup/*
-%dir %{_datadir}/anaconda/addons/data
-%{_datadir}/anaconda/addons/data/*
+%dir %{_datadir}/anaconda/addons/dbus/confs
+%{_datadir}/anaconda/addons/dbus/confs/*
+%dir %{_datadir}/anaconda/addons/dbus/services
+%{_datadir}/anaconda/addons/dbus/services/*
 
 %changelog
 * Sun Mar 27 2016 M. Vefa Bicakci <m.v.b@runbox.com> - 1.0-1
