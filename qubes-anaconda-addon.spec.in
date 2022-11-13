@@ -27,7 +27,9 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons
 cp -a org_qubes_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
 cp data/org.qubes.Anaconda.Addons.InitialSetup.conf $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
+install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
 cp data/org.qubes.Anaconda.Addons.InitialSetup.service $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
 
 %files
