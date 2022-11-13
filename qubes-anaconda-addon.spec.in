@@ -37,9 +37,10 @@ cp data/org.qubes.Anaconda.Addons.InitialSetup.service $RPM_BUILD_ROOT/%{_datadi
 %doc LICENSE README
 %dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
 %{_datadir}/anaconda/addons/org_qubes_initial_setup/*
+%dir %{_datadir}/anaconda/addons/dbus
+%dir %{_datadir}/anaconda/addons/dbus/services
 %dir %{_datadir}/anaconda/addons/dbus/confs
 %{_datadir}/anaconda/addons/dbus/confs/*
-%dir %{_datadir}/anaconda/addons/dbus/services
 %{_datadir}/anaconda/addons/dbus/services/*
 
 %changelog
