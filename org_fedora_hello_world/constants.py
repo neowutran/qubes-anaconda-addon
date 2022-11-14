@@ -16,14 +16,20 @@
 # Red Hat, Inc.
 #
 
-"""The __main__.py file of a service is what runs as the service. See also the files:
-data/*.service
-"""
+"""This module contains constants that are used by various parts of the addon."""
 
-from pyanaconda.modules.common import init
-init()  # must be called before importing the service code
+from dasbus.identifier import DBusServiceIdentifier
+from pyanaconda.core.dbus import DBus
+from pyanaconda.modules.common.constants.namespaces import ADDONS_NAMESPACE
 
-# pylint:disable=wrong-import-position
-from org_qubes_initial_setup.service.initial_setup import InitialSetup
-service = InitialSetup()
-service.run()
+# These define location of the addon's service on D-Bus. See also the data/*.conf file.
+
+HELLO_WORLD_NAMESPACE = (*ADDONS_NAMESPACE, "HelloWorld")
+
+HELLO_WORLD = DBusServiceIdentifier(
+    namespace=HELLO_WORLD_NAMESPACE,
+    message_bus=DBus
+)
+
+# It's better to store paths without the initial slash "/" because of os.path.join behavior.
+HELLO_WORLD_FILE_PATH = "root/hello_world.txt"

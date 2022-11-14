@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020 Red Hat, Inc.
+# Copyright (C) 2013  Red Hat, Inc.
 #
 # This copyrighted material is made available to anyone wishing to use,
 # modify, copy, or redistribute it subject to the terms and conditions of
@@ -15,21 +15,29 @@
 # License and may only be used or replicated with the express permission of
 # Red Hat, Inc.
 #
+# Red Hat Author(s): Vratislav Podzimek <vpodzime@redhat.com>
+#
+"""Hello world category module"""
 
-"""This module contains constants that are used by various parts of the addon."""
+from pyanaconda.ui.categories import SpokeCategory
 
-from dasbus.identifier import DBusServiceIdentifier
-from pyanaconda.core.dbus import DBus
-from pyanaconda.modules.common.constants.namespaces import ADDONS_NAMESPACE
+__all__ = ["HelloWorldCategory"]
 
-# These define location of the addon's service on D-Bus. See also the data/*.conf file.
+_ = lambda x: x
 
-INITIAL_SETUP_NAMESPACE = (*ADDONS_NAMESPACE, "InitialSetup")
 
-INITIAL_SETUP = DBusServiceIdentifier(
-    namespace=INITIAL_SETUP_NAMESPACE,
-    message_bus=DBus
-)
+class HelloWorldCategory(SpokeCategory):
+    """The Hello Word category.
 
-# It's better to store paths without the initial slash "/" because of os.path.join behavior.
-# HELLO_WORLD_FILE_PATH = "root/hello_world.txt"
+    Class for the Hello world category. Category groups related spokes
+    together. Both logically and visually (creates a box on a hub).
+    Spokes reference a class of the category they should be included in.
+    """
+
+    @staticmethod
+    def get_title():
+        return _("HELLO WORLD")
+
+    @staticmethod
+    def get_sort_order():
+        return 0

@@ -1,6 +1,0 @@
-[D-BUS Service]
-# Start the org.fedoraproject.Anaconda.Addons.HelloWorld service.
-# Runs org_qubes_initial_setup/service/__main__.py
-Name=org.qubes.Anaconda.Addons.InitialSetup
-Exec=/usr/libexec/anaconda/start-module org_qubes_initial_setup.service
-User=root

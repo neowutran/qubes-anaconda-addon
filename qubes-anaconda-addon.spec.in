@@ -26,18 +26,22 @@ at first boot time.
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons
-cp -a org_qubes_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+#cp -a org_qubes_initial_setup $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
+cp -a org_fedora_hello_world $RPM_BUILD_ROOT/%{_datadir}/anaconda/addons/
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs
-cp data/org.qubes.Anaconda.Addons.InitialSetup.conf $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
+#cp data/org.qubes.Anaconda.Addons.InitialSetup.conf $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
+cp data/org.fedoraproject.Anaconda.Addons.HelloWorld.conf $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/confs/
 
 install -d $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services
-cp data/org.qubes.Anaconda.Addons.InitialSetup.service $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
+#cp data/org.qubes.Anaconda.Addons.InitialSetup.service $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
+cp data/org.fedoraproject.Anaconda.Addons.HelloWorld.service $RPM_BUILD_ROOT/%{_datadir}/anaconda/dbus/services/
 
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README
-%dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
+%dir %{_datadir}/anaconda/addons/org_fedora_hello_world
+#%dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
 %{_datadir}/anaconda/addons/org_qubes_initial_setup/*
 %dir %{_datadir}/anaconda/dbus
 %dir %{_datadir}/anaconda/dbus/services

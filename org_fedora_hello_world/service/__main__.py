@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013  Red Hat, Inc.
+# Copyright (C) 2020 Red Hat, Inc.
 #
 # This copyrighted material is made available to anyone wishing to use,
 # modify, copy, or redistribute it subject to the terms and conditions of
@@ -15,29 +15,15 @@
 # License and may only be used or replicated with the express permission of
 # Red Hat, Inc.
 #
-# Red Hat Author(s): Vratislav Podzimek <vpodzime@redhat.com>
-#
-"""Initial setup category module"""
 
-from pyanaconda.ui.categories import SpokeCategory
+"""The __main__.py file of a service is what runs as the service. See also the files:
+data/*.service
+"""
 
-__all__ = ["InitialSetupCategory"]
+from pyanaconda.modules.common import init
+init()  # must be called before importing the service code
 
-_ = lambda x: x
-
-
-class InitialSetupCategory(SpokeCategory):
-    """The Initial Setup category.
-
-    Class for the Initial setup category. Category groups related spokes
-    together. Both logically and visually (creates a box on a hub).
-    Spokes reference a class of the category they should be included in.
-    """
-
-    @staticmethod
-    def get_title():
-        return _("INITIAL SETUP")
-
-    @staticmethod
-    def get_sort_order():
-        return 0
+# pylint:disable=wrong-import-position
+from org_fedora_hello_world.service.hello_world import HelloWorld
+service = HelloWorld()
+service.run()
