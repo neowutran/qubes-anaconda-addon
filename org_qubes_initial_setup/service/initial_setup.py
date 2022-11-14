@@ -25,8 +25,6 @@ from pyanaconda.modules.common.containers import TaskContainer
 
 from org_qubes_initial_setup.constants import INITIAL_SETUP
 from org_qubes_initial_setup.service.initial_setup_interface import InitialSetupInterface
-from org_qubes_initial_setup.service.installation import InitialSetupConfigurationTask, \
-    InitialSetupInstallationTask
 from org_qubes_initial_setup.service.kickstart import InitialSetupKickstartSpecification
 
 log = logging.getLogger(__name__)
@@ -97,8 +95,7 @@ class InitialSetup(KickstartService):
         Anaconda's code automatically calls the ***_with_tasks methods and
         stores the returned ***Task instances to later execute their run() methods.
         """
-        task = InitialSetupConfigurationTask()
-        return [task]
+        return []
 
     def install_with_tasks(self):
         """Return installation tasks.
@@ -108,8 +105,4 @@ class InitialSetup(KickstartService):
         Anaconda's code automatically calls the ***_with_tasks methods and
         stores the returned ***Task instances to later execute their run() methods.
         """
-        task = InitialSetupInstallationTask(
-            conf.target.system_root,
-            self._reverse,
-            self._lines)
-        return [task]
+        return []

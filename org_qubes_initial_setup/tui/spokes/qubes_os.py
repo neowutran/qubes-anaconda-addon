@@ -87,9 +87,6 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalTUISpoke):
         self._container = None
         self.qubes_data = self._initial_setup_module
 
-        for attr in self.qubes_data.bool_options:
-            setattr(self, '_' + attr, getattr(self.qubes_data, attr))
-
         self.initialize_done()
 
     def initialize(self):
@@ -111,8 +108,8 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalTUISpoke):
         """
         super().setup(args)
 
-        self._reverse = self._hello_world_module.Reverse
-        self._lines = self._hello_world_module.Lines
+        for attr in self.qubes_data.bool_options:
+            setattr(self, '_' + attr, getattr(self.qubes_data, attr))
 
         return True
 

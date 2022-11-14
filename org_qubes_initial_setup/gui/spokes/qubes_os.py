@@ -23,6 +23,11 @@
 import os
 import subprocess
 import logging
+import gi
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('GLib', '2.0')
 
 from gi.repository import Gtk
 # from pyanaconda.ui.gui import GUIObject
@@ -510,7 +515,7 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalSpoke):
         super().initialize()
         # self._entry = self.builder.get_object("textLines")
         # self._reverse = self.builder.get_object("reverseCheckButton")
-        self.qubes_data.gui_mode = True
+        self.qubes_data.set_gui_mode(True)
 
     def refresh(self):
         """
@@ -581,44 +586,43 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalSpoke):
 
         #reverse = self._reverse.get_active()
         #self._hello_world_module.SetReverse(reverse)
-        self.qubes_data.skip = self.check_advanced.get_selected()
+        self.qubes_data.set_skip(self.check_advanced.get_selected())
 
-        self.qubes_data.templates_to_install = []
+        templates_to_install = []
         if self.choice_install_fedora.get_selected():
-            self.qubes_data.templates_to_install.append('fedora')
+            templates_to_install.append('fedora')
         if self.choice_install_debian.get_selected():
-            self.qubes_data.templates_to_install.append('debian')
+            templates_to_install.append('debian')
         if self.choice_install_whonix.get_selected():
-            self.qubes_data.templates_to_install += ['whonix-gw', 'whonix-ws']
+            templates_to_install += ['whonix-gw', 'whonix-ws']
+        self.qubes_data.set_templates_to_install(templates_to_install)
 
         for key, val in self.qubes_data.templates_aliases.items():
             if self.choice_default_template.get_entry() == val:
-                self.qubes_data.default_template = key
+                self.qubes_data.set_default_template(key)
                 continue
 
-        self.qubes_data.system_vms = self.choice_system.get_selected()
+        self.qubes_data.set_system_vms(self.choice_system.get_selected())
 
-        self.qubes_data.disp_firewallvm_and_usbvm = \
-            self.choice_disp_firewallvm_and_usbvm.get_selected()
-        self.qubes_data.disp_netvm = self.choice_disp_netvm.get_selected()
+        self.qubes_data.set_disp_firewallvm_and_usbvm(self.choice_disp_firewallvm_and_usbvm.get_selected())
+        self.qubes_data.set_disp_netvm(self.choice_disp_netvm.get_selected())
 
-        self.qubes_data.default_vms = self.choice_default.get_selected()
+        self.qubes_data.set_default_vms(self.choice_default.get_selected())
 
-        self.qubes_data.usbvm = self.choice_usb.get_selected()
-        self.qubes_data.usbvm_with_netvm = self.choice_usb_with_netvm.get_selected()
-        self.qubes_data.allow_usb_mouse = self.choice_allow_usb_mouse.get_selected()
+        self.qubes_data.set_usbvm(self.choice_usb.get_selected())
+        self.qubes_data.set_usbvm_with_netvm(self.choice_usb_with_netvm.get_selected())
+        self.qubes_data.set_allow_usb_mouse(self.choice_allow_usb_mouse.get_selected())
 
-        self.qubes_data.whonix_vms = self.choice_whonix.get_selected()
-        self.qubes_data.whonix_default = self.choice_whonix_updates.get_selected()
+        self.qubes_data.set_whonix_vms(self.choice_whonix.get_selected())
+        self.qubes_data.set_whonix_default(self.choice_whonix_updates.get_selected())
 
-        self.qubes_data.custom_pool = self.choice_custom_pool.get_selected()
+        self.qubes_data.set_custom_pool(self.choice_custom_pool.get_selected())
         if self.choice_pool_list and \
                 self.choice_pool_list.get_vgroup() and \
                 self.choice_pool_list.get_tpool():
-            self.qubes_data.vg_tpool = (self.choice_pool_list.get_vgroup(),
-                                        self.choice_pool_list.get_tpool())
+            self.qubes_data.set_vg_tpool((self.choice_pool_list.get_vgroup(),self.choice_pool_list.get_tpool()))
 
-        self.qubes_data.seen = True
+        self.qubes_data.set_seen(True)
 
     def execute(self):
         """
@@ -672,14 +676,7 @@ class QubesOsSpoke(FirstbootSpokeMixIn, NormalSpoke):
 
         :rtype: str
         """
-        lines = self._hello_world_module.Lines
-
-        if not lines:
-            return _("No text added")
-        elif self._hello_world_module.Reverse:
-            return _("Text set with {} lines to reverse").format(len(lines))
-        else:
-            return _("Text set with {} lines").format(len(lines))
+        return ""
 
     @staticmethod
     def _parse_lvm_cache(lvm_output):
