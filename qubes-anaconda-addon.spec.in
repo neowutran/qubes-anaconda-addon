@@ -42,7 +42,8 @@ cp data/org.fedoraproject.Anaconda.Addons.HelloWorld.service $RPM_BUILD_ROOT/%{_
 %doc LICENSE README
 %dir %{_datadir}/anaconda/addons/org_fedora_hello_world
 #%dir %{_datadir}/anaconda/addons/org_qubes_initial_setup
-%{_datadir}/anaconda/addons/org_qubes_initial_setup/*
+#%{_datadir}/anaconda/addons/org_qubes_initial_setup/*
+%{_datadir}/anaconda/addons/org_fedora_hello_world/*
 %dir %{_datadir}/anaconda/dbus
 %dir %{_datadir}/anaconda/dbus/services
 %dir %{_datadir}/anaconda/dbus/confs
