@@ -96,11 +96,11 @@ class InitialSetupInterface(KickstartModuleInterface):
         self.implementation.set_debian_available(debian_available)
 
     @property 
-    def default_template(self) -> Bool:
+    def default_template(self) -> Str:
         return self.implementation.default_template 
 
     @emits_properties_changed
-    def set_default_template(self, default_template: Bool):
+    def set_default_template(self, default_template: Str):
         self.implementation.set_default_template(default_template) 
 
     @property 
@@ -168,19 +168,19 @@ class InitialSetupInterface(KickstartModuleInterface):
         self.implementation.set_system_vms(system_vms)
 
     @property 
-    def templates_aliases(self) -> Bool:
+    def templates_aliases(self) -> List[Str]:
         return self.implementation.templates_aliases 
 
     @emits_properties_changed
-    def set_templates_aliases(self, templates_aliases: Bool):
+    def set_templates_aliases(self, templates_aliases: List[Str]):
         self.implementation.set_templates_aliases(templates_aliases)
 
     @property 
-    def templates_to_install(self) -> Bool:
+    def templates_to_install(self) -> List[Str]:
         return self.implementation.templates_to_install 
 
     @emits_properties_changed
-    def set_templates_to_install(self, templates_to_install: Bool):
+    def set_templates_to_install(self, templates_to_install: List[Str]):
         self.implementation.set_templates_to_install(templates_to_install)
         
     @property 
@@ -208,11 +208,11 @@ class InitialSetupInterface(KickstartModuleInterface):
         self.implementation.set_usbvm_with_netvm(usbvm_with_netvm)
 
     @property 
-    def vg_tpool(self) -> Bool:
+    def vg_tpool(self) -> Str:
         return self.implementation.vg_tpool 
 
     @emits_properties_changed
-    def set_vg_tpool(self, vg_tpool: Bool):
+    def set_vg_tpool(self, vg_tpool: Str):
         self.implementation.set_vg_tpool(vg_tpool)
 
     @property 
@@ -239,20 +239,3 @@ class InitialSetupInterface(KickstartModuleInterface):
     def set_whonix_vms(self, whonix_vms: Bool):
         self.implementation.set_whonix_vms(whonix_vms)
 
-    @property
-    def Reverse(self) -> Bool:
-        """Whether to reverse order of lines in the hello world file."""
-        return self.implementation.reverse
-
-    @emits_properties_changed
-    def SetReverse(self, reverse: Bool):
-        self.implementation.set_reverse(reverse)
-
-    @property
-    def Lines(self) -> List[Str]:
-        """Lines of the hello world file."""
-        return self.implementation.lines
-
-    @emits_properties_changed
-    def SetLines(self, lines: List[Str]):
-        self.implementation.set_lines(lines)
